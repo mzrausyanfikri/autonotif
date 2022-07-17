@@ -1,0 +1,25 @@
+base:
+  scheduler-period: 3600 # in seconds
+
+datasource:
+  cosmos:
+    enable: true
+    nodepool:
+    - https://node.atomscan.com/
+
+target:
+  telegram:
+    enable: true
+    token: "your-bot-secret-token"
+    channelId: 0
+
+repository:
+  postgresql:
+    enable: true
+    address: autonotif-postgres
+    database: autonotif
+    username: autonotif_usr
+    password: autonotif_pwd
+  localfile:
+    enable: false
+    dir: ./tmp/autonotif-db/
