@@ -12,6 +12,8 @@ import (
 	scribble "github.com/nanobox-io/golang-scribble"
 )
 
+var collectionNotFound = "%s.json: no such file or directory"
+
 type ProposalLocalfile struct {
 	db *scribble.Driver
 }
@@ -30,6 +32,10 @@ func (r *ProposalLocalfile) GetLastID(ctx context.Context, chainType entity.Bloc
 	collection := strings.ToLower(chainType.String())
 	records, err := r.db.ReadAll(collection)
 	if err != nil {
+		if strings.Contains(err.Error(), fmt.Sprintf(collectionNotFound, collection)) {
+			return 0, nil
+		}
+
 		return 0, fmt.Errorf("db read all: %s", err.Error())
 	}
 
