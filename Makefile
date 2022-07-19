@@ -1,6 +1,7 @@
 APP_NAME=autonotif-scheduler
 OUTPUT_DIR=deployment/tmp
 DOCKER_NETWORK=autonotif-network
+CONFIG_PATH?=./config/config.yaml
 
 .PHONY: tidy
 tidy:
@@ -37,7 +38,7 @@ docker-run:
 	docker run --rm \
 		-p 8080:8080 \
 		-v $(shell pwd)/config:/app/config \
-		-e CONFIG_PATH=./config/docker-config.yaml \
+		-e CONFIG_PATH=$(CONFIG_PATH) \
 		--net $(DOCKER_NETWORK) \
 		--name $(APP_NAME) \
 		$(APP_NAME):latest
@@ -47,7 +48,7 @@ run: clean compile docker-build docker-run
 
 .PHONY: go-run
 go-run:
-	CONFIG_PATH=./config/config.yaml go run cmd/scheduler/main.go
+	CONFIG_PATH=$(CONFIG_PATH) go run cmd/scheduler/main.go
 
 .PHONE: docker-network
 docker-network:

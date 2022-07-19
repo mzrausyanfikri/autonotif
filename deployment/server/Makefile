@@ -1,6 +1,7 @@
 APP_NAME=autonotif-scheduler
 LOAD_DIR=./app-images
 DOCKER_NETWORK=autonotif-network
+CONFIG_PATH?=./config/config.yaml
 
 .PHONE: docker-network
 docker-network:
@@ -35,7 +36,7 @@ docker-run:
 	docker run --rm -d \
 		-p 8080:8080 \
 		-v $(shell pwd)/config:/app/config \
-		-e CONFIG_PATH=./config/config.yaml \
+		-e CONFIG_PATH=$(CONFIG_PATH) \
 		--net $(DOCKER_NETWORK) \
 		--name $(APP_NAME) \
 		$(APP_NAME):latest
