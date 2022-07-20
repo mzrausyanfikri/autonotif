@@ -69,5 +69,6 @@ See guideline in `deployment/remote/README.md`
 | Time zone for Docker autonotif-postgres       | Done      |
 | PostgreSQL Docker Compose                     | Done      |
 | PostgreSQL Initialize Table - Proposals       | Done      |
-
+| Run Autonotif Container in Detach mode        | Done      |
+| Run PostgreSQL Container in Detach mode       | Done      |
 
