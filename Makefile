@@ -11,22 +11,23 @@ tidy:
 test:
 	go test -race ./...
 
+.PHONY: migrate
+migrate:
+	docker run --rm -v $(shell pwd)/db/migrations:/migrations --network $(DOCKER_NETWORK) migrate/migrate -path=/migrations/ -database $(url) up
+
+.PHONY: rollback
+rollback:
+	docker run --rm -v $(shell pwd)/db/migrations:/migrations --network $(DOCKER_NETWORK) migrate/migrate -path=/migrations/ -database $(url) down 1
+
+.PHONY: clean
+clean:
+	rm -rf $(OUTPUT_DIR)
+	docker image prune --force --filter='label=$(APP_NAME)'
+
 .PHONY: compile
 compile:
 	mkdir -p $(OUTPUT_DIR)
 	env GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o $(OUTPUT_DIR)/$(APP_NAME) cmd/scheduler/main.go
-
-.PHONE: docker-network
-docker-network:
-	docker network create $(DOCKER_NETWORK) || true
-
-.PHONE: docker-postgres
-docker-postgres:
-	docker-compose -f db/docker-compose.yml up -d
-
-.PHONY: migrate
-migrate:
-	docker run --rm -v $(shell pwd)/db/migrations:/migrations --network $(DOCKER_NETWORK) migrate/migrate -path=/migrations/ -database $(url) up
 
 .PHONY: docker-build
 docker-build:
@@ -49,11 +50,10 @@ run: clean compile docker-network docker-postgres docker-build docker-run
 go-run:
 	CONFIG_PATH=$(CONFIG_PATH) go run cmd/scheduler/main.go
 
-.PHONY: rollback
-rollback:
-	docker run --rm -v $(shell pwd)/db/migrations:/migrations --network $(DOCKER_NETWORK) migrate/migrate -path=/migrations/ -database $(url) down 1
+.PHONE: docker-network
+docker-network:
+	docker network create $(DOCKER_NETWORK) || true
 
-.PHONY: clean
-clean:
-	rm -rf $(OUTPUT_DIR)
-	docker image prune --force --filter='label=$(APP_NAME)'
+.PHONE: docker-postgres
+docker-postgres:
+	docker-compose -f db/docker-compose.yml up -d

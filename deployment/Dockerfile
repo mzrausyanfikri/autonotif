@@ -1,12 +1,10 @@
 FROM alpine:3.11
 
-#RUN adduser -S -D -H -h /app appuser
+RUN adduser -S -D -H -h /app appuser
 
 WORKDIR /app
-RUN chown root /app
-#RUN chown appuser /app
-#USER appuser
-USER root
+RUN chown appuser /app
+USER appuser
 
 COPY deployment/tmp/autonotif-scheduler .
 
