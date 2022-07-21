@@ -1,3 +1,10 @@
+CREATE DATABASE autonotifdb_osmosis;
+GRANT ALL PRIVILEGES ON DATABASE autonotifdb_osmosis TO autonotif_usr;
+
+CREATE DATABASE autonotifdb_cosmoshub;
+GRANT ALL PRIVILEGES ON DATABASE autonotifdb_cosmoshub TO autonotif_usr;
+
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;

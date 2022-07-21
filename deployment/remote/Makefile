@@ -1,4 +1,4 @@
-APP_NAME=autonotif-scheduler
+APP_NAME=autonotif-scheduler-osmosis
 OUTPUT_DIR=../tmp
 SAVE_DIR=../tmp
 SERVER_HOST_PATH?=user@127.0.0.1:/home/user

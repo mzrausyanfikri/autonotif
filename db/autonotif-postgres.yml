@@ -22,6 +22,4 @@ services:
 
 networks:
   autonotif-network:
-    name: autonotif-network
-    driver: bridge
-  
+    external: true

@@ -1,4 +1,4 @@
-APP_NAME=autonotif-scheduler
+APP_NAME=autonotif-scheduler-osmosis
 OUTPUT_DIR=deployment/tmp
 DOCKER_NETWORK=autonotif-network
 CONFIG_PATH?=./config/config.yaml
@@ -24,6 +24,11 @@ clean:
 	rm -rf $(OUTPUT_DIR)
 	docker image prune --force --filter='label=$(APP_NAME)'
 
+.PHONY: remove
+clean:
+	docker stop $(APP_NAME) || true
+	docker rm $(APP_NAME) || true
+
 .PHONY: compile
 compile:
 	mkdir -p $(OUTPUT_DIR)
@@ -35,8 +40,8 @@ docker-build:
 
 .PHONY: docker-run
 docker-run:
-	docker run -d --rm \
-		-p 10.104.0.4:8080:8080 \
+	docker run --rm \
+		-p 8081:8081 \
 		-v $(shell pwd)/config:/app/config \
 		-e CONFIG_PATH=$(CONFIG_PATH) \
 		--net $(DOCKER_NETWORK) \
@@ -44,7 +49,7 @@ docker-run:
 		$(APP_NAME):latest
 
 .PHONE: run
-run: clean compile docker-network docker-postgres docker-build docker-run
+run: clean compile docker-network docker-postgres remove docker-build docker-run
 
 .PHONY: go-run
 go-run:
@@ -56,4 +61,4 @@ docker-network:
 
 .PHONE: docker-postgres
 docker-postgres:
-	docker-compose -f db/docker-compose.yml up -d
+	docker-compose -f db/autonotif-postgres.yml up -d

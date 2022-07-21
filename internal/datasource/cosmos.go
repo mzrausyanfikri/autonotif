@@ -57,6 +57,10 @@ func (c *Cosmos) GetProposalDetail(ctx context.Context, id int) (entity.Proposal
 	return p, err
 }
 
+type Response struct {
+	STATUS string `json:"status"`
+}
+
 func (c *Cosmos) getProposalByID(ctx context.Context, nodeAdress string, id int) (entity.Proposal, error) {
 	url := fmt.Sprintf("%s%s/%d", nodeAdress, getProposalsEndpoint, id)
 	req, _ := prepareRequest(ctx, http.MethodGet, url, nil)
@@ -76,6 +80,16 @@ func (c *Cosmos) getProposalByID(ctx context.Context, nodeAdress string, id int)
 
 	if resp.StatusCode == http.StatusOK {
 		bodyBytes, _ := ioutil.ReadAll(resp.Body)
+
+		var response Response
+		json.NewDecoder(resp.Body).Decode(&response)
+		fmt.Println(response)
+		fmt.Println(response.STATUS)
+		if response.STATUS == "ERROR" {
+			return 0, fmt.Errorf("failed to http get proposal: %s", errResp.Error())
+			//return entity.Proposal{}, entity.ErrProposalNotYetExistInDatasource
+		}
+
 		return entity.Proposal{
 			ID:        id,
 			ChainType: entity.BlockchainType_COSMOS,
