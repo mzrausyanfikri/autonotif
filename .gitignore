@@ -6,6 +6,7 @@
 *.dylib
 *.env
 *.test
+*.swp
 
 _playground/
 tmp/
