@@ -35,8 +35,8 @@ docker-build:
 
 .PHONY: docker-run
 docker-run:
-	docker run --rm \
-		-p 8080:8080 \
+	docker run -d --rm \
+		-p 10.104.0.4:8080:8080 \
 		-v $(shell pwd)/config:/app/config \
 		-e CONFIG_PATH=$(CONFIG_PATH) \
 		--net $(DOCKER_NETWORK) \
@@ -44,7 +44,7 @@ docker-run:
 		$(APP_NAME):latest
 
 .PHONE: run
-run: clean compile docker-build docker-run
+run: clean compile docker-network docker-postgres docker-build docker-run
 
 .PHONY: go-run
 go-run:
@@ -52,12 +52,8 @@ go-run:
 
 .PHONE: docker-network
 docker-network:
-	docker network create $(DOCKER_NETWORK)
+	docker network create $(DOCKER_NETWORK) || true
 
 .PHONE: docker-postgres
 docker-postgres:
-	docker run -d -p 5432:5432 \
-		--net $(DOCKER_NETWORK) \
-		--name autonotif-postgres \
-		--env-file db/autonotif-postgres.env \
-		postgres:14.4-alpine
+	docker-compose -f db/docker-compose.yml up -d

@@ -46,3 +46,29 @@ curl --request POST 'http://localhost:8080/force-last-id' \
 
 ## Deployment
 See guideline in `deployment/remote/README.md`
+
+## Features
+
+| Features                                      | Cosmoshub | Osmosis | Juno    |
+| --------------------------------------------- | --------- | ------- | ------- | 
+| Blockchain Governance Proposals Notification  | Supported | Backlog | Backlog |
+| Sending to Telegram bot                       | Supported | Backlog | Backlog |
+| Sending to Email                              | Backlog   | Backlog | Backlog |
+| Sending to Slack bot                          | Backlog   | Backlog | Backlog |
+| Sending to WhatsApp bot                       | Backlog   | Backlog | Backlog |
+| Sending to Discord bot                        | Backlog   | Backlog | Backlog |
+| Blockchain Cosmos Upgrade Plan Notification   | Backlog   | Backlog | Backlog |
+| Check "Have <name> voted to the Proposal <ID> | Backlog   | Backlog | Backlog |
+| Check "Have <name> Upgraded to Plan <VERSION> | Backlog   | Backlog | Backlog |
+
+## Room for Refactors
+
+| Refactors                                     | Status    |
+| --------------------------------------------- | --------- |
+| Time zone for Docker autonotif-scheduler      | Done      |
+| Time zone for Docker autonotif-postgres       | Done      |
+| PostgreSQL Docker Compose                     | Done      |
+| PostgreSQL Initialize Table - Proposals       | Done      |
+| Run Autonotif Container in Detach mode        | Done      |
+| Run PostgreSQL Container in Detach mode       | Done      |
+

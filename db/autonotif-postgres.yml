@@ -1,0 +1,27 @@
+# Use postgres/example user/password credentials
+version: '3.1'
+
+services:
+
+  db:
+    container_name: autonotif-postgres
+    image: postgres:14.4-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: autonotif
+      POSTGRES_USER: autonotif_usr
+      POSTGRES_PASSWORD: autonotif_pwd
+      POSTGRES_HOST_AUTH_METHOD: trust
+      TZ: Asia/Jakarta
+    ports:
+      - 127.0.0.1:5432:5432
+    networks:
+      - autonotif-network
+    volumes:
+      - ./autonotif-postgres.sql:/docker-entrypoint-initdb.d/autonotif-postgres.sql
+
+networks:
+  autonotif-network:
+    name: autonotif-network
+    driver: bridge
+  
