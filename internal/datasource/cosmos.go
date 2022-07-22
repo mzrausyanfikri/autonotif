@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strconv"
 	"time"
+        "strings"
 
 	"github.com/aimzeter/autonotif/entity"
 	fakeua "github.com/wux1an/fake-useragent"
@@ -81,19 +82,16 @@ func (c *Cosmos) getProposalByID(ctx context.Context, nodeAdress string, id int)
 	if resp.StatusCode == http.StatusOK {
 		bodyBytes, _ := ioutil.ReadAll(resp.Body)
 
-		var response Response
-		json.NewDecoder(resp.Body).Decode(&response)
-		fmt.Println(response)
-		fmt.Println(response.STATUS)
-		if response.STATUS == "ERROR" {
-			return 0, fmt.Errorf("failed to http get proposal: %s", errResp.Error())
-			//return entity.Proposal{}, entity.ErrProposalNotYetExistInDatasource
-		}
+                bodyString := string(bodyBytes)
+                bodyParse := strings.ReplaceAll(bodyString, "\\n", "\n")
+                bodyFinal := strings.ReplaceAll(bodyParse, "\n", "\\n")
+                bodyFinalBytes := []byte(bodyFinal)
+                fmt.Println(bodyFinal)
 
 		return entity.Proposal{
 			ID:        id,
 			ChainType: entity.BlockchainType_COSMOS,
-			RawData:   string(bodyBytes),
+			RawData:   string(bodyFinalBytes),
 		}, nil
 	}
 

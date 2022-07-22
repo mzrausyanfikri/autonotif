@@ -5,7 +5,8 @@ datasource:
   cosmos:
     enable: true
     nodepool:
-    - https://node.atomscan.com/
+    #- https://node.atomscan.com/
+    - https://osmosis.stakesystems.io/
 
 target:
   telegram:
