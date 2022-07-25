@@ -1,4 +1,4 @@
-APP_NAME=autonotif-scheduler-osmosis
+APP_NAME=autonotif-scheduler
 LOAD_DIR=./app-images
 DOCKER_NETWORK=autonotif-network
 CONFIG_PATH?=./config/config.yaml
@@ -34,7 +34,7 @@ docker-load:
 .PHONY: docker-run
 docker-run:
 	docker run --rm -d \
-		-p 8081:8081 \
+		-p 8080:8080 \
 		-v $(shell pwd)/config:/app/config \
 		-e CONFIG_PATH=$(CONFIG_PATH) \
 		--net $(DOCKER_NETWORK) \

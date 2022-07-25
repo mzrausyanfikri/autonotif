@@ -1,4 +1,4 @@
-APP_NAME=autonotif-scheduler-osmosis
+APP_NAME=autonotif-scheduler
 POSTGRES_NAME=autonotif-postgres
 OUTPUT_DIR=deployment/tmp
 DOCKER_NETWORK=autonotif-network
@@ -42,7 +42,7 @@ docker-build:
 .PHONY: docker-run
 docker-run:
 	docker run -d --rm \
-		-p 8081:8081 \
+		-p 8080:8080 \
 		-v $(shell pwd)/config:/app/config \
 		-e CONFIG_PATH=$(CONFIG_PATH) \
 		--net $(DOCKER_NETWORK) \
@@ -50,7 +50,7 @@ docker-run:
 		$(APP_NAME):latest
 
 .PHONE: run
-run: docker-network docker-postgres tidy test clean compile remove-app docker-build docker-run
+run: docker-network remove-app remove-postgres docker-postgres tidy test clean compile docker-build docker-run
 
 .PHONY: go-run
 go-run:

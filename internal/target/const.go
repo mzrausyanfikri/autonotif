@@ -21,7 +21,6 @@ Type: <strong>%s</strong>
 Voting start time: <strong>%s</strong>
 Voting end time: <strong>%s</strong>
 
-<i>%s</i>
 
 🗳️ <strong><a href="https://www.mintscan.io/osmosis/proposals/%s">View details and cast your VOTE</a></strong> 🗳️
 

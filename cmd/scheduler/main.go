@@ -50,7 +50,7 @@ func serveHTTP(runner *autonotif.Autonotif) {
 	http.Handle("/metrics", promhttp.Handler())
 	http.HandleFunc("/healthz", runner.HealthHandler)
 	http.HandleFunc("/force-last-id", runner.ForceLastIDHandler)
-	_ = http.ListenAndServe(":8081", nil)
+	_ = http.ListenAndServe(":8080", nil)
 }
 
 func schedule(cfg *config.Config, runner *autonotif.Autonotif) error {

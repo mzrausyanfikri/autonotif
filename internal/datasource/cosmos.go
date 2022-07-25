@@ -10,7 +10,7 @@ import (
 	"sort"
 	"strconv"
 	"time"
-        "strings"
+        //"strings"
 
 	"github.com/aimzeter/autonotif/entity"
 	fakeua "github.com/wux1an/fake-useragent"
@@ -83,15 +83,15 @@ func (c *Cosmos) getProposalByID(ctx context.Context, nodeAdress string, id int)
 		bodyBytes, _ := ioutil.ReadAll(resp.Body)
 
                 bodyString := string(bodyBytes)
-                bodyParse := strings.ReplaceAll(bodyString, "\\n", "\n")
-                bodyFinal := strings.ReplaceAll(bodyParse, "\n", "\\n")
-                bodyFinalBytes := []byte(bodyFinal)
-                fmt.Println(bodyFinal)
+                //bodyParse := strings.ReplaceAll(bodyString, "\\n", "\n")
+                //bodyFinal := strings.ReplaceAll(bodyParse, "\n", "</br>")
+                //bodyFinalBytes := []byte(bodyFinal)
+                fmt.Println(bodyString)
 
 		return entity.Proposal{
 			ID:        id,
 			ChainType: entity.BlockchainType_COSMOS,
-			RawData:   string(bodyFinalBytes),
+			RawData:   string(bodyBytes),
 		}, nil
 	}
 

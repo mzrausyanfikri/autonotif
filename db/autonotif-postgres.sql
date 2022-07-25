@@ -45,8 +45,6 @@ CREATE TABLE public.schema_migrations (
 
 ALTER TABLE public.schema_migrations OWNER TO autonotif_usr;
 ALTER TABLE ONLY public.proposals ALTER COLUMN id SET DEFAULT nextval('public.proposals_id_seq'::regclass);
-COPY public.proposals (id, proposal_id, chain_type, raw_data, created_at) FROM stdin;
-COPY public.schema_migrations (version, dirty) FROM stdin;
 SELECT pg_catalog.setval('public.proposals_id_seq', 1, true);
 
 ALTER TABLE ONLY public.proposals

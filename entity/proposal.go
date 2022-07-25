@@ -18,7 +18,7 @@ type Proposal struct {
 }
 
 func (e BlockchainType) String() string {
-	return [...]string{"OTHER", "OSMOSIS"}[e]
+	return [...]string{"OTHER", "COSMOS"}[e]
 }
 
 func (e BlockchainType) EnumIndex() int {
