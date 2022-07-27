@@ -97,10 +97,10 @@ func composeMessageText(p entity.Proposal) (string, error) {
 	text := fmt.Sprintf(messageTemplate,
 		detail.Proposal.ProposalID,
 		detail.Proposal.Content.Title,
+		detail.Proposal.Status,
 		typeSlice[len(typeSlice)-1],
 		detail.Proposal.VotingStartTime.In(timeLoc).Format("2006-01-02 15:04:05")+" WIB",
 		detail.Proposal.VotingEndTime.In(timeLoc).Format("2006-01-02 15:04:05")+" WIB",
-		detail.Proposal.Content.Description,
 		detail.Proposal.ProposalID,
 	)
 

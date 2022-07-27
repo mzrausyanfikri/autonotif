@@ -17,6 +17,7 @@ var (
 
 📰 <strong>%s</strong>
 
+Status: <strong>%s</strong>
 Type: <strong>%s</strong>
 Voting start time: <strong>%s</strong>
 Voting end time: <strong>%s</strong>
