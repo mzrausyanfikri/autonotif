@@ -1,5 +1,5 @@
 base:
-  scheduler-period: 3600 # in seconds
+  scheduler-period: 3600s
 
 datasource:
   cosmos:

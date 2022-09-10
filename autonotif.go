@@ -8,20 +8,6 @@ import (
 	"github.com/aimzeter/autonotif/entity"
 )
 
-type ProposalStore interface {
-	GetLastID(ctx context.Context, chainType entity.BlockchainType) (int, error)
-	Set(ctx context.Context, p entity.Proposal) error
-	RevokeLastID(ctx context.Context, chainType entity.BlockchainType, lastID int) error
-}
-
-type DatasourceAPI interface {
-	GetProposalDetail(ctx context.Context, id int) (entity.Proposal, error)
-}
-
-type Notifier interface {
-	SendMessage(ctx context.Context, p entity.Proposal) error
-}
-
 type Autonotif struct {
 	d *Dependencies
 }

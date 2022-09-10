@@ -23,7 +23,7 @@ func (a *Autonotif) HealthHandler(w http.ResponseWriter, r *http.Request) {
 
 func (a *Autonotif) ForceLastIDHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	chainType, lastID, ok := parseHeader(w, r)
+	chainType, lastID, ok := parseForceLastIDHeader(w, r)
 	if !ok {
 		return
 	}
@@ -66,28 +66,28 @@ func (a *Autonotif) ForceLastID(ctx context.Context, chainType entity.Blockchain
 	return nil
 }
 
-func parseHeader(w http.ResponseWriter, r *http.Request) (entity.BlockchainType, int, bool) {
+func parseForceLastIDHeader(w http.ResponseWriter, r *http.Request) (entity.BlockchainType, int, bool) {
 	ctStr := r.Header.Get("chain")
 	if ctStr == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		_, _ = io.WriteString(w, "Invalid value: chain empty\n")
-		return 0, 0, false
+		return handleBadRequest(w, "Invalid value: chain empty\n")
 	}
 
 	chainType := entity.BlockchainTypeFromString(ctStr)
 	if chainType == entity.BlockchainType_OTHER {
-		w.WriteHeader(http.StatusBadRequest)
-		_, _ = io.WriteString(w, "Invalid value: chain unknown\n")
-		return 0, 0, false
+		return handleBadRequest(w, "Invalid value: chain unknown\n")
 	}
 
 	lastIDStr := r.Header.Get("lastId")
 	lastID, err := strconv.Atoi(lastIDStr)
 	if err != nil || lastID == 0 {
-		w.WriteHeader(http.StatusBadRequest)
-		_, _ = io.WriteString(w, "Invalid value: lastId\n")
-		return 0, 0, false
+		return handleBadRequest(w, "Invalid value: lastId\n")
 	}
 
 	return chainType, lastID, true
+}
+
+func handleBadRequest(w http.ResponseWriter, msg string) (entity.BlockchainType, int, bool) {
+	w.WriteHeader(http.StatusBadRequest)
+	_, _ = io.WriteString(w, msg)
+	return 0, 0, false
 }

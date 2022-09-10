@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/spf13/viper"
 )
@@ -23,7 +24,7 @@ func (cfg *Config) Validate() error {
 }
 
 type Base struct {
-	SchedulerPeriod int `yaml:"scheduler-period" mapstructure:"scheduler-period"`
+	SchedulerPeriod time.Duration `yaml:"scheduler-period" mapstructure:"scheduler-period"`
 }
 
 type Datasource struct {
