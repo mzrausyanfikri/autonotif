@@ -2,9 +2,9 @@ package target
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/aimzeter/autonotif/entity"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -29,11 +29,11 @@ func NewTelegram(secret string, channelID int64) (*Telegram, error) {
 	}, nil
 }
 
-func (t *Telegram) SendMessage(ctx context.Context, p entity.Proposal) error {
+func (t *Telegram) SendMessage(ctx context.Context, p *entity.Proposal) error {
 	return t.sendMessage(ctx, t.channelID, p)
 }
 
-func (t *Telegram) sendMessage(ctx context.Context, chatID int64, p entity.Proposal) error {
+func (t *Telegram) sendMessage(ctx context.Context, chatID int64, p *entity.Proposal) error {
 	text, err := composeMessageText(p)
 	if err != nil {
 		return err
@@ -85,23 +85,29 @@ func (t *Telegram) botSend(msg tgbotapi.MessageConfig) error {
 	return nil
 }
 
-func composeMessageText(p entity.Proposal) (string, error) {
-	var detail entity.ProposalRawData_COSMOS_v1
+func composeMessageText(p *entity.Proposal) (string, error) {
+	messageStructure := p.ChainConfig.ChainMessageStructure
 
-	jsonErr := json.Unmarshal([]byte(p.RawData), &detail)
-	if jsonErr != nil {
-		return "", jsonErr
-	}
+	typeStr := p.Data.Path(messageStructure.Type.JSONPath).Data().(string)
+	typeSlice := strings.Split(typeStr, ".")
 
-	typeSlice := strings.Split(detail.Proposal.Content.Type, ".")
+	st := p.Data.Path(messageStructure.StartTime.JSONPath).Data().(string)
+	startTime, _ := time.Parse(time.RFC3339, st)
+
+	et := p.Data.Path(messageStructure.EndTime.JSONPath).Data().(string)
+	endTime, _ := time.Parse(time.RFC3339, et)
+
 	text := fmt.Sprintf(messageTemplate,
-		detail.Proposal.ProposalID,
-		detail.Proposal.Content.Title,
-		detail.Proposal.Status,
+		messageStructure.Name.Const,
+		p.Data.Path(messageStructure.ProposalID.JSONPath).Data(),
+		p.Data.Path(messageStructure.Title.JSONPath).Data(),
+		p.Data.Path(messageStructure.Status.JSONPath).Data(),
 		typeSlice[len(typeSlice)-1],
-		detail.Proposal.VotingStartTime.In(timeLoc).Format("2006-01-02 15:04:05")+" WIB",
-		detail.Proposal.VotingEndTime.In(timeLoc).Format("2006-01-02 15:04:05")+" WIB",
-		detail.Proposal.ProposalID,
+		startTime.In(timeLoc).Format("2006-01-02 15:04:05")+" WIB",
+		endTime.In(timeLoc).Format("2006-01-02 15:04:05")+" WIB",
+		messageStructure.ViewLink.Const,
+		p.Data.Path(messageStructure.ProposalID.JSONPath).Data(),
+		messageStructure.ViewLink.Const,
 	)
 
 	return text, nil

@@ -58,7 +58,7 @@ func schedule(cfg *config.Config, runner *autonotif.Autonotif) error {
 	go awaitTermination(terminated)
 
 	for {
-		timer := time.NewTimer(time.Duration(cfg.Base.SchedulerPeriod) * time.Second)
+		timer := time.NewTimer(cfg.Base.SchedulerPeriod)
 		select {
 		case <-terminated:
 			_ = runner.Terminate()

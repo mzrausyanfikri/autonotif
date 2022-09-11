@@ -13,7 +13,7 @@ const (
 var (
 	timeLoc, _      = time.LoadLocation(timeTZ)
 	messageTemplate = `
-💥 <strong><i>New Proposal on Cosmos - ID: %s</i></strong>
+💥 <strong><i>New Proposal on %s - ID: %s</i></strong>
 
 📰 <strong>%s</strong>
 
@@ -22,10 +22,8 @@ Type: <strong>%s</strong>
 Voting start time: <strong>%s</strong>
 Voting end time: <strong>%s</strong>
 
-<i>%s</i>
+🗳️ <strong><a href="%s/%s">View details and cast your VOTE</a></strong> 🗳️
 
-🗳️ <strong><a href="https://www.mintscan.io/cosmos/proposals/%s">view details and cast your VOTE</a></strong> 🗳️
-
-🏛️ <strong><a href="https://www.mintscan.io/cosmos/proposals">view all active proposals</a></strong> 🏛️
+🏛️ <strong><a href="%s">View all active proposals</a></strong> 🏛️
 `
 )

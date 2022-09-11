@@ -4,15 +4,16 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/spf13/viper"
 )
 
 type Config struct {
-	Base       Base       `yaml:"base" mapstructure:"base"`
-	Datasource Datasource `yaml:"datasource" mapstructure:"datasource"`
-	Target     Target     `yaml:"target" mapstructure:"target"`
-	Repository Repository `yaml:"repository" mapstructure:"repository"`
+	Base       Base             `yaml:"base" mapstructure:"base"`
+	ChainList  map[string]Chain `yaml:"chain" mapstructure:"chain"`
+	Target     Target           `yaml:"target" mapstructure:"target"`
+	Repository Repository       `yaml:"repository" mapstructure:"repository"`
 }
 
 func (cfg *Config) Validate() error {
@@ -23,16 +24,36 @@ func (cfg *Config) Validate() error {
 }
 
 type Base struct {
-	SchedulerPeriod int `yaml:"scheduler-period" mapstructure:"scheduler-period"`
+	SchedulerPeriod time.Duration `yaml:"schedulerPeriod" mapstructure:"schedulerPeriod"`
 }
 
-type Datasource struct {
-	Cosmos Cosmos `yaml:"cosmos" mapstructure:"cosmos"`
+type Chain struct {
+	Enable                bool                  `yaml:"enable" mapstructure:"enable"`
+	ChainAPI              ChainAPI              `yaml:"api" mapstructure:"api"`
+	ChainMessageStructure ChainMessageStructure `yaml:"messageStructure" mapstructure:"messageStructure"`
 }
 
-type Cosmos struct {
-	Enable   bool     `yaml:"enable" mapstructure:"enable"`
-	Nodepool []string `yaml:"nodepool" mapstructure:"nodepool"`
+type ChainAPI struct {
+	Endpoint string        `yaml:"endpoint" mapstructure:"endpoint"`
+	Nodepool []string      `yaml:"nodepool" mapstructure:"nodepool"`
+	Retry    int           `yaml:"retry" mapstructure:"retry"`
+	Timeout  time.Duration `yaml:"timeout" mapstructure:"timeout"`
+}
+
+type ChainMessageStructure struct {
+	Name       ChainMessageStructureAttr `yaml:"name" mapstructure:"name"`
+	ProposalID ChainMessageStructureAttr `yaml:"proposalId" mapstructure:"proposalId"`
+	Title      ChainMessageStructureAttr `yaml:"title" mapstructure:"title"`
+	Status     ChainMessageStructureAttr `yaml:"status" mapstructure:"status"`
+	Type       ChainMessageStructureAttr `yaml:"type" mapstructure:"type"`
+	StartTime  ChainMessageStructureAttr `yaml:"startTime" mapstructure:"startTime"`
+	EndTime    ChainMessageStructureAttr `yaml:"endTime" mapstructure:"endTime"`
+	ViewLink   ChainMessageStructureAttr `yaml:"viewLink" mapstructure:"viewLink"`
+}
+
+type ChainMessageStructureAttr struct {
+	Const    string `yaml:"const" mapstructure:"const"`
+	JSONPath string `yaml:"jsonPath" mapstructure:"jsonPath"`
 }
 
 type Target struct {
