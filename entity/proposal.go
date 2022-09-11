@@ -1,40 +1,28 @@
 package entity
 
-type BlockchainType int
-
-const (
-	BlockchainType_OTHER BlockchainType = iota
-	BlockchainType_COSMOS
+import (
+	"github.com/Jeffail/gabs/v2"
+	"github.com/aimzeter/autonotif/config"
 )
 
-var AllBlockchainType = []BlockchainType{
-	BlockchainType_COSMOS,
+var RevokedProposalData, _ = gabs.ParseJSON([]byte(`{"proposal": "REVOKED_PROPOSAL_DATA"}`))
+
+var RevokedProposal = Proposal{
+	ChainConfig: config.Chain{},
+	Data:        RevokedProposalData,
 }
 
 type Proposal struct {
-	ID        int
-	ChainType BlockchainType
-	RawData   string
-}
-
-func (e BlockchainType) String() string {
-	return [...]string{"OTHER", "COSMOS"}[e]
-}
-
-func (e BlockchainType) EnumIndex() int {
-	return int(e)
+	ID          int
+	ChainType   string
+	ChainConfig config.Chain
+	Data        *gabs.Container
 }
 
 func (p Proposal) IsShouldNotify() bool {
-	return p.RawData != ProposalRawData_NOT_EXIST
+	return true
 }
 
-func BlockchainTypeFromString(str string) BlockchainType {
-	for _, chainType := range AllBlockchainType {
-		if chainType.String() == str {
-			return chainType
-		}
-	}
-
-	return BlockchainType_OTHER
+func (p Proposal) IsRevokedProposal() bool {
+	return p.Data == RevokedProposalData
 }

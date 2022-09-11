@@ -3,12 +3,12 @@ module github.com/aimzeter/autonotif
 go 1.18
 
 require (
+	github.com/Jeffail/gabs/v2 v2.6.1
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/jackc/pgx/v4 v4.16.1
 	github.com/nanobox-io/golang-scribble v0.0.0-20190309225732-aa3e7c118975
 	github.com/prometheus/client_golang v1.12.2
 	github.com/spf13/viper v1.12.0
-	github.com/wux1an/fake-useragent v1.1.0
 )
 
 require (

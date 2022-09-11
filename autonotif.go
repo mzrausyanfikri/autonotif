@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
+	"github.com/aimzeter/autonotif/config"
 	"github.com/aimzeter/autonotif/entity"
 )
 
@@ -21,21 +23,21 @@ func (a *Autonotif) HealthCheck() error {
 }
 
 func (a *Autonotif) Run() error {
-	for _, chainType := range entity.AllBlockchainType {
-		log.Printf("INFO | chain %s running...\n", chainType)
-		err := a.notifyRecentProposal(chainType)
+	for chainType, chainConf := range a.d.conf.ChainList {
+		log.Printf("INFO | chain %s running...\n", strings.ToUpper(chainType))
+		err := a.notifyRecentProposal(chainType, chainConf)
 		if err != nil {
-			log.Printf("ERROR | chain %s runner.notifyRecentProposal: %s\n", chainType, err)
+			log.Printf("ERROR | chain %s runner.notifyRecentProposal: %s\n", strings.ToUpper(chainType), err)
 			continue
 		}
 
-		log.Printf("INFO | chain %s run successfully\n", chainType)
+		log.Printf("INFO | chain %s run successfully\n", strings.ToUpper(chainType))
 	}
 
 	return nil
 }
 
-func (a *Autonotif) notifyRecentProposal(chainType entity.BlockchainType) error {
+func (a *Autonotif) notifyRecentProposal(chainType string, chainConf config.Chain) error {
 	ctx := context.Background()
 
 	lastID, err := a.d.dsStore.GetLastID(ctx, chainType)
@@ -44,8 +46,13 @@ func (a *Autonotif) notifyRecentProposal(chainType entity.BlockchainType) error 
 	}
 
 	nextID := lastID + 1
+	p := &entity.Proposal{
+		ID:          nextID,
+		ChainType:   chainType,
+		ChainConfig: chainConf,
+	}
 
-	p, err := a.d.dsAPI.GetProposalDetail(ctx, nextID)
+	p, err = a.d.dsAPI.GetProposalDetail(ctx, p)
 	if err == entity.ErrProposalNotYetExistInDatasource {
 		return nil
 	}
@@ -67,7 +74,7 @@ func (a *Autonotif) notifyRecentProposal(chainType entity.BlockchainType) error 
 	return nil
 }
 
-func (a *Autonotif) notify(ctx context.Context, p entity.Proposal) error {
+func (a *Autonotif) notify(ctx context.Context, p *entity.Proposal) error {
 	if !p.IsShouldNotify() {
 		return nil
 	}

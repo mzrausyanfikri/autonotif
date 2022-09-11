@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
-	"strconv"
 	"strings"
+	"time"
 
 	"github.com/aimzeter/autonotif/entity"
 	scribble "github.com/nanobox-io/golang-scribble"
@@ -28,8 +28,8 @@ func NewProposalLocalfile(dir string) (*ProposalLocalfile, error) {
 	return &ProposalLocalfile{db: db}, nil
 }
 
-func (r *ProposalLocalfile) GetLastID(ctx context.Context, chainType entity.BlockchainType) (int, error) {
-	collection := strings.ToLower(chainType.String())
+func (r *ProposalLocalfile) GetLastID(ctx context.Context, chainType string) (int, error) {
+	collection := strings.ToLower(chainType)
 	records, err := r.db.ReadAll(collection)
 	if err != nil {
 		if strings.Contains(err.Error(), fmt.Sprintf(collectionNotFound, collection)) {
@@ -39,49 +39,54 @@ func (r *ProposalLocalfile) GetLastID(ctx context.Context, chainType entity.Bloc
 		return 0, fmt.Errorf("db read all: %s", err.Error())
 	}
 
-	all := []entity.Proposal{}
+	all := []file{}
 	for _, rec := range records {
-		var p entity.Proposal
-		if err := json.Unmarshal([]byte(rec), &p); err != nil {
+		var f file
+		if err := json.Unmarshal([]byte(rec), &f); err != nil {
 			return 0, fmt.Errorf("json unmarshall: %s", err.Error())
 		}
-		all = append(all, p)
+		all = append(all, f)
 	}
 
-	allIds := []int{}
-	for _, p := range all {
-		allIds = append(allIds, p.ID)
-	}
-
-	if len(allIds) == 0 {
+	if len(all) == 0 {
 		return 0, nil
 	}
 
-	sort.Ints(allIds)
-	return allIds[len(allIds)-1], nil
+	sort.Slice(all, func(i, j int) bool {
+		return all[i].CreatedAt > all[j].CreatedAt
+	})
+
+	return all[0].ProposalID, nil
 }
 
-func (r *ProposalLocalfile) Set(ctx context.Context, p entity.Proposal) error {
-	collection := strings.ToLower(p.ChainType.String())
-	return r.db.Write(collection, strconv.Itoa(p.ID), p)
+func (r *ProposalLocalfile) Set(ctx context.Context, p *entity.Proposal) error {
+	collection := strings.ToLower(p.ChainType)
+
+	f := proposalToFile(p)
+	f.CreatedAt = time.Now().UTC().Format(time.RFC3339)
+	return r.db.Write(collection, f.CreatedAt, f)
 }
 
-func (r *ProposalLocalfile) RevokeLastID(ctx context.Context, chainType entity.BlockchainType, intendedLastID int) error {
-	collection := strings.ToLower(chainType.String())
-	lastID, err := r.GetLastID(ctx, chainType)
-	if err != nil {
-		return fmt.Errorf("GetLastID: %s", err.Error())
+func (r *ProposalLocalfile) RevokeLastID(ctx context.Context, chainType string, intendedLastID int) error {
+	p := entity.RevokedProposal
+	p.ChainType = chainType
+	p.ID = intendedLastID
+	return r.Set(ctx, &p)
+}
+
+type file struct {
+	ProposalID  int
+	ChainType   string
+	ChainConfig interface{}
+	Data        string
+	CreatedAt   string
+}
+
+func proposalToFile(p *entity.Proposal) file {
+	return file{
+		ProposalID:  p.ID,
+		ChainType:   p.ChainType,
+		ChainConfig: p.ChainConfig,
+		Data:        p.Data.String(),
 	}
-
-	i := intendedLastID + 1
-	for {
-		if i > lastID {
-			break
-		}
-
-		r.db.Delete(collection, strconv.Itoa(i))
-		i++
-	}
-
-	return nil
 }

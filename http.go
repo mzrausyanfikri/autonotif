@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/aimzeter/autonotif/entity"
 )
@@ -23,7 +24,7 @@ func (a *Autonotif) HealthHandler(w http.ResponseWriter, r *http.Request) {
 
 func (a *Autonotif) ForceLastIDHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	chainType, lastID, ok := parseForceLastIDHeader(w, r)
+	chainType, lastID, ok := a.parseForceLastIDHeader(w, r)
 	if !ok {
 		return
 	}
@@ -35,10 +36,10 @@ func (a *Autonotif) ForceLastIDHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, _ = io.WriteString(w, fmt.Sprintf("%s: %d revoked successfully\n", chainType.String(), lastID))
+	_, _ = io.WriteString(w, fmt.Sprintf("%s: %d revoked successfully\n", chainType, lastID))
 }
 
-func (a *Autonotif) ForceLastID(ctx context.Context, chainType entity.BlockchainType, lastID int) error {
+func (a *Autonotif) ForceLastID(ctx context.Context, chainType string, lastID int) error {
 	// start proposal from zero
 	if lastID == -1 {
 		err := a.d.dsStore.RevokeLastID(ctx, chainType, 0)
@@ -48,7 +49,13 @@ func (a *Autonotif) ForceLastID(ctx context.Context, chainType entity.Blockchain
 		return nil
 	}
 
-	p, err := a.d.dsAPI.GetProposalDetail(ctx, lastID)
+	p := &entity.Proposal{
+		ID:          lastID,
+		ChainType:   chainType,
+		ChainConfig: a.d.conf.ChainList[chainType],
+	}
+
+	p, err := a.d.dsAPI.GetProposalDetail(ctx, p)
 	if err != nil {
 		return fmt.Errorf("dsAPI.GetProposalDetail: %s", err.Error())
 	}
@@ -66,15 +73,16 @@ func (a *Autonotif) ForceLastID(ctx context.Context, chainType entity.Blockchain
 	return nil
 }
 
-func parseForceLastIDHeader(w http.ResponseWriter, r *http.Request) (entity.BlockchainType, int, bool) {
-	ctStr := r.Header.Get("chain")
-	if ctStr == "" {
+func (a *Autonotif) parseForceLastIDHeader(w http.ResponseWriter, r *http.Request) (string, int, bool) {
+	chainType := r.Header.Get("chain")
+	if chainType == "" {
 		return handleBadRequest(w, "Invalid value: chain empty\n")
 	}
 
-	chainType := entity.BlockchainTypeFromString(ctStr)
-	if chainType == entity.BlockchainType_OTHER {
-		return handleBadRequest(w, "Invalid value: chain unknown\n")
+	chainType = strings.ToLower(chainType)
+	_, ok := a.d.conf.ChainList[chainType]
+	if !ok {
+		handleBadRequest(w, "Invalid value: chain unknown\n")
 	}
 
 	lastIDStr := r.Header.Get("lastId")
@@ -86,8 +94,8 @@ func parseForceLastIDHeader(w http.ResponseWriter, r *http.Request) (entity.Bloc
 	return chainType, lastID, true
 }
 
-func handleBadRequest(w http.ResponseWriter, msg string) (entity.BlockchainType, int, bool) {
+func handleBadRequest(w http.ResponseWriter, msg string) (string, int, bool) {
 	w.WriteHeader(http.StatusBadRequest)
 	_, _ = io.WriteString(w, msg)
-	return 0, 0, false
+	return "", 0, false
 }

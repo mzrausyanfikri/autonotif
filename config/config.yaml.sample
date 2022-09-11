@@ -1,11 +1,58 @@
 base:
-  scheduler-period: 3600s
+  schedulerPeriod: 3600s
 
-datasource:
+chain:
   cosmos:
     enable: true
-    nodepool:
-    - https://node.atomscan.com/
+    api:
+      endpoint: "/cosmos/gov/v1beta1/proposals"
+      nodepool:
+      - https://node.atomscan.com
+      retry: 5
+      timeout: 10s
+    messageStructure:
+      name:
+        const: "Cosmos"
+      proposalId:
+        jsonPath: "proposal.proposal_id"
+      title:
+        jsonPath: "proposal.content.title"
+      status:
+        jsonPath: "proposal.status"
+      type:
+        jsonPath: "proposal.content.@type"
+      startTime:
+        jsonPath: "proposal.voting_start_time"
+      endTime:
+        jsonPath: "proposal.voting_end_time"
+      viewLink:
+        const: "https://www.mintscan.io/cosmos/proposals"
+  juno:
+    enable: true
+    api:
+      endpoint: "/cosmos/gov/v1beta1/proposals"
+      nodepool:
+      - https://lcd-juno.itastakers.com
+      - https://rest-juno.ecostake.com
+      retry: 5
+      timeout: 10s
+    messageStructure:
+      name:
+        const: "Juno"
+      proposalId:
+        jsonPath: "proposal.proposal_id"
+      title:
+        jsonPath: "proposal.content.title"
+      status:
+        jsonPath: "proposal.status"
+      type:
+        jsonPath: "proposal.content.@type"
+      startTime:
+        jsonPath: "proposal.voting_start_time"
+      endTime:
+        jsonPath: "proposal.voting_end_time"
+      viewLink:
+        const: "https://www.mintscan.io/juno/proposals"
 
 target:
   telegram:

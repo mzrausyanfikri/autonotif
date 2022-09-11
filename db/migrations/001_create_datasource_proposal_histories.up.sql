@@ -1,6 +1,6 @@
 BEGIN;
 
-CREATE TABLE IF NOT EXISTS proposals (
+CREATE TABLE IF NOT EXISTS datasource_proposal_histories (
     id              BIGSERIAL   PRIMARY KEY,
     proposal_id     BIGINT      NOT NULL ,
     chain_type      TEXT        NOT NULL,
@@ -8,6 +8,6 @@ CREATE TABLE IF NOT EXISTS proposals (
     created_at      TIMESTAMP   NOT NULL
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS proposals_chain_type_proposal_id_key ON proposals (chain_type, proposal_id);
+CREATE INDEX IF NOT EXISTS dp_histories_last_proposal_id_idx ON datasource_proposal_histories(chain_type, created_at DESC, proposal_id);
 
 COMMIT;
