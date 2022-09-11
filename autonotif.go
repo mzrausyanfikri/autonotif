@@ -25,6 +25,7 @@ func (a *Autonotif) HealthCheck() error {
 func (a *Autonotif) Run() error {
 	for chainType, chainConf := range a.d.conf.ChainList {
 		log.Printf("INFO | chain %s running...\n", strings.ToUpper(chainType))
+
 		err := a.notifyRecentProposal(chainType, chainConf)
 		if err != nil {
 			log.Printf("ERROR | chain %s runner.notifyRecentProposal: %s\n", strings.ToUpper(chainType), err)
