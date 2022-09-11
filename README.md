@@ -29,7 +29,7 @@ make go-run
 ## Optional Usage
 
 ### Force Set Last ID
-Make sure autonotif server already run.
+Make sure autonotif server already run. Do not force set last id during autonotif schedule time, to prevent race condition.
 
 __Force autonotif to start notify from specific id__
 ```
@@ -50,7 +50,7 @@ See guideline in `deployment/remote/README.md`
 ## Features
 
 | Features                                      | Cosmoshub | Osmosis | Juno    |
-| --------------------------------------------- | --------- | ------- | ------- | 
+| --------------------------------------------- | --------- | ------- | ------- |
 | Blockchain Governance Proposals Notification  | Supported | Backlog | Backlog |
 | Sending to Telegram bot                       | Supported | Backlog | Backlog |
 | Sending to Email                              | Backlog   | Backlog | Backlog |
@@ -63,12 +63,11 @@ See guideline in `deployment/remote/README.md`
 
 ## Room for Refactors
 
-| Refactors                                     | Status    |
-| --------------------------------------------- | --------- |
-| Time zone for Docker autonotif-scheduler      | Done      |
-| Time zone for Docker autonotif-postgres       | Done      |
-| PostgreSQL Docker Compose                     | Done      |
-| PostgreSQL Initialize Table - Proposals       | Done      |
-| Run Autonotif Container in Detach mode        | Done      |
-| Run PostgreSQL Container in Detach mode       | Done      |
-
+| Refactors                                | Status |
+| ---------------------------------------- | ------ |
+| Time zone for Docker autonotif-scheduler | Done   |
+| Time zone for Docker autonotif-postgres  | Done   |
+| PostgreSQL Docker Compose                | Done   |
+| PostgreSQL Initialize Table - Proposals  | Done   |
+| Run Autonotif Container in Detach mode   | Done   |
+| Run PostgreSQL Container in Detach mode  | Done   |

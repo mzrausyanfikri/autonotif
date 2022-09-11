@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-
-	"github.com/aimzeter/autonotif/entity"
 )
 
 func (a *Autonotif) HealthHandler(w http.ResponseWriter, r *http.Request) {
@@ -42,30 +40,10 @@ func (a *Autonotif) ForceLastIDHandler(w http.ResponseWriter, r *http.Request) {
 func (a *Autonotif) ForceLastID(ctx context.Context, chainType string, lastID int) error {
 	// start proposal from zero
 	if lastID == -1 {
-		err := a.d.dsStore.RevokeLastID(ctx, chainType, 0)
-		if err != nil {
-			return fmt.Errorf("dsStore.RevokeLastID: %s", err.Error())
-		}
-		return nil
+		lastID = 0
 	}
 
-	p := &entity.Proposal{
-		ID:          lastID,
-		ChainType:   chainType,
-		ChainConfig: a.d.conf.ChainList[chainType],
-	}
-
-	p, err := a.d.dsAPI.GetProposalDetail(ctx, p)
-	if err != nil {
-		return fmt.Errorf("dsAPI.GetProposalDetail: %s", err.Error())
-	}
-
-	err = a.d.dsStore.Set(ctx, p)
-	if err != nil {
-		return fmt.Errorf("dsStore.Set: %s", err.Error())
-	}
-
-	err = a.d.dsStore.RevokeLastID(ctx, chainType, lastID)
+	err := a.d.dsStore.RevokeLastID(ctx, chainType, lastID)
 	if err != nil {
 		return fmt.Errorf("dsStore.RevokeLastID: %s", err.Error())
 	}
